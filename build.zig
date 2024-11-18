@@ -27,7 +27,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.root_module.addAnonymousImport("wayland", .{ .root_source_file = wayland_zig });
+    const base_module = b.addModule("wayland_base", .{ .root_source_file = b.path("gen/wayland_base.zig") });
+    const wayland_zig_module = b.addModule("wayland", .{ .root_source_file = wayland_zig });
+    wayland_zig_module.addImport("wayland_base", base_module);
+
+    exe.root_module.addImport("wayland", wayland_zig_module);
 
     b.installArtifact(exe);
 }
